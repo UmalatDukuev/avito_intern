@@ -2,13 +2,24 @@ package service
 
 import (
 	"avito_intern/internal/repository"
-	"avito_intern/models"
 )
 
 type Authorization interface {
-	CreateUser(models.User) (int, error)
+	CreateUser(RegisterInput) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(accessToken string) (int, error)
+	GenerateDummyToken(userType string) (string, error)
+}
+
+type RegisterInput struct {
+	Email    string
+	Password string
+	Role     string
+}
+
+type LoginInput struct {
+	Email    string
+	Password string
 }
 
 type Service struct {

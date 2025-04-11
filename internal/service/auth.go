@@ -1,8 +1,8 @@
 package service
 
 import (
+	"avito_intern/internal/handler/entity"
 	"avito_intern/internal/repository"
-	"avito_intern/models"
 	"crypto/sha1"
 	"errors"
 	"fmt"
@@ -30,16 +30,28 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user models.User) (int, error) {
-	user.Password = generatePasswordHash(user.Password)
-	return s.repo.CreateUser(user)
+func (s *AuthService) CreateUser(user RegisterInput) (int, error) {
+	var us entity.User
+	us.Email = user.Email
+	us.Role = user.Role
+	us.Password = user.Password
+	return s.repo.CreateUser(us)
 }
 
 func generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
-
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+}
+
+func (s *AuthService) GenerateDummyToken(userType string) (string, error) {
+	claims := jwt.MapClaims{
+		"userId":   0,
+		"userType": userType,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(signingKey))
 }
 
 func (s *AuthService) GenerateToken(username, password string) (string, error) {

@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS pvzs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    registration_date TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    city city NOT NULL DEFAULT 'Москва',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

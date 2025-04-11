@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"avito_intern/models"
+	"avito_intern/internal/handler/entity"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -11,8 +11,8 @@ type Repository struct {
 }
 
 type Authorization interface {
-	CreateUser(models.User) (int, error)
-	GetUser(username, password string) (models.User, error)
+	CreateUser(entity.User) (int, error)
+	GetUser(username, password string) (entity.User, error)
 }
 
 func NewRepository(db *sqlx.DB) *Repository {

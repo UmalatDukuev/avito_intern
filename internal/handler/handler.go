@@ -17,13 +17,19 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 	router.POST("/dummyLogin", h.dummyLogin)
-	router.POST("/register", h.userIdentity, h.register)
-
-	// auth := router.Group("/auth")
-	// {
-	// 	auth.POST("/register", h.register)
-	// 	// auth.POST("/sign-in", h.signIn)
-
-	// }
+	router.POST("/register", h.register)
+	router.POST("/login", h.login)
+	pvz := router.Group("/pvz")
+	{
+		pvz.POST("/", h.createPVZ)
+		pvz.GET("/", h.getPVZList)
+		pvzID := router.Group("/:pvzId")
+		{
+			pvzID.POST("/close_last_reception", h.closeLastReception)
+			pvzID.POST("/delete_last_product", h.deleteLastProduct)
+		}
+	}
+	router.POST("/receptions", h.createReception)
+	router.POST("/products", h.addProductToReception)
 	return router
 }

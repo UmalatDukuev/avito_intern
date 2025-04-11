@@ -5,7 +5,7 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(RegisterInput) (int, error)
+	CreateUser(RegisterInput) (string, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(accessToken string) (int, error)
 	GenerateDummyToken(userType string) (string, error)

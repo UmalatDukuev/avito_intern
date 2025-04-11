@@ -11,7 +11,7 @@ type Repository struct {
 }
 
 type Authorization interface {
-	CreateUser(entity.User) (int, error)
+	CreateUser(entity.User) (string, error)
 	GetUser(username, password string) (entity.User, error)
 }
 

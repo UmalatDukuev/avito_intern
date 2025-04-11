@@ -30,7 +30,7 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user RegisterInput) (int, error) {
+func (s *AuthService) CreateUser(user RegisterInput) (string, error) {
 	var us entity.User
 	us.Email = user.Email
 	us.Role = user.Role
@@ -46,7 +46,7 @@ func generatePasswordHash(password string) string {
 
 func (s *AuthService) GenerateDummyToken(userType string) (string, error) {
 	claims := jwt.MapClaims{
-		"userId":   0,
+		"userId":   "0",
 		"userType": userType,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	}

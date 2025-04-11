@@ -2,8 +2,10 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 type DummyLoginInput struct {
@@ -12,14 +14,16 @@ type DummyLoginInput struct {
 
 var secretKey = []byte("secretKey")
 
-// func generateToken(userType string) (string, error) {
-// 	claims := jwt.MapClaims{}
-// 	claims["userType"] = userType
-// 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+func generateDummyToken(userType string) (string, error) {
+	claims := jwt.MapClaims{
+		"userId":   0,
+		"userType": userType,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	}
 
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-// 	return token.SignedString(secretKey)
-// }
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secretKey)
+}
 
 func (h *Handler) dummyLogin(c *gin.Context) {
 	var input DummyLoginInput
@@ -29,7 +33,7 @@ func (h *Handler) dummyLogin(c *gin.Context) {
 		return
 	}
 
-	token, err := h.services.GenerateToken(input.UserType)
+	token, err := generateDummyToken(input.UserType)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "failed to generate token")
 		return

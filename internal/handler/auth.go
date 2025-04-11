@@ -44,7 +44,7 @@ func (h *Handler) register(c *gin.Context) {
 	}
 	var registerInput service.RegisterInput
 	registerInput.Email = input.Email
-	registerInput.Password = input.Password
+	registerInput.Password = service.GeneratePasswordHash(input.Password)
 	registerInput.Role = input.Role
 
 	id, err := h.services.Authorization.CreateUser(registerInput)

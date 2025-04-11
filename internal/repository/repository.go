@@ -12,7 +12,7 @@ type Repository struct {
 
 type Authorization interface {
 	CreateUser(entity.User) (string, error)
-	GetUser(username, password string) (entity.User, error)
+	GetUser(email, password string) (entity.User, error)
 }
 
 func NewRepository(db *sqlx.DB) *Repository {

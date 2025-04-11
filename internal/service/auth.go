@@ -38,7 +38,7 @@ func (s *AuthService) CreateUser(user RegisterInput) (string, error) {
 	return s.repo.CreateUser(us)
 }
 
-func generatePasswordHash(password string) string {
+func GeneratePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
@@ -54,8 +54,8 @@ func (s *AuthService) GenerateDummyToken(userType string) (string, error) {
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *AuthService) GenerateToken(username, password string) (string, error) {
-	user, err := s.repo.GetUser(username, generatePasswordHash(password))
+func (s *AuthService) GenerateToken(email, password string) (string, error) {
+	user, err := s.repo.GetUser(email, GeneratePasswordHash(password))
 	if err != nil {
 		return "", err
 	}

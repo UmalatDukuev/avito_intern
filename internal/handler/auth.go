@@ -16,11 +16,11 @@ func (h *Handler) dummyLogin(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
-	if input.UserType != "moderator" && input.UserType != "employee" {
-		newErrorResponse(c, http.StatusInternalServerError, "user_type should be employee or moderator")
+	if input.Role != "moderator" && input.Role != "employee" {
+		newErrorResponse(c, http.StatusBadRequest, "user_type should be employee or moderator")
 		return
 	}
-	token, err := h.services.Authorization.GenerateDummyToken(input.UserType)
+	token, err := h.services.Authorization.GenerateDummyToken(input.Role)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "failed to generate token")
 		return
@@ -52,22 +52,31 @@ func (h *Handler) register(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	token, err := h.services.Authorization.GenerateToken(input.Email, input.Password)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
+		"id":    id,
+		"token": token,
 	})
 }
 
 func (h *Handler) login(c *gin.Context) {
 	var input request.LoginInput
 
-	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+	if err := c.ShouldBindJSON(&input); err != nil {
+		println(err.Error())
+		newErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	var registerInput service.LoginInput
-	registerInput.Email = input.Email
-	registerInput.Password = input.Password
+	// var registerInput service.LoginInput
+	// registerInput.Email = input.Email
+	// registerInput.Password = input.Password
 
 	token, err := h.services.Authorization.GenerateToken(input.Email, input.Password)
 	if err != nil {

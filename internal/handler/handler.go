@@ -21,7 +21,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.POST("/login", h.login)
 	pvz := router.Group("/pvz")
 	{
-		pvz.POST("/", h.createPVZ)
+		pvz.POST("/", h.userIdentity, h.roleMiddleware("moderator"), h.createPVZ)
 		pvz.GET("/", h.getPVZList)
 		pvzID := router.Group("/:pvzId")
 		{

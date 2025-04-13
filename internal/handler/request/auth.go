@@ -1,7 +1,7 @@
 package request
 
 type DummyLoginInput struct {
-	UserType string `json:"userType" binding:"required"`
+	Role string `json:"userType" binding:"required"`
 }
 
 type RegisterInput struct {

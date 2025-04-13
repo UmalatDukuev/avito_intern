@@ -1,8 +1,10 @@
 package entity
 
+import "time"
+
 type Reception struct {
-	ID       string `json:"id" db:"id"`
-	DateTime string `json:"date_time" db:"date_time"`
-	PvzID    string `json:"pvz_id" db:"pvz_id"`
-	Status   string `json:"status" db:"status"`
+	ID       string    `json:"id" db:"id"`
+	DateTime time.Time `json:"date_time" db:"date_time"`
+	PvzID    string    `json:"pvz_id" db:"pvz_id"`
+	Status   string    `json:"status" db:"status"`
 }

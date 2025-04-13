@@ -62,6 +62,7 @@ func (s *AuthService) GenerateToken(email, password string) (string, error) {
 
 	claims := jwt.MapClaims{
 		"userId": user.ID,
+		"role":   user.Role,
 		"exp":    time.Now().Add(tokenTTL).Unix(),
 		"iat":    time.Now().Unix(),
 	}
@@ -70,26 +71,32 @@ func (s *AuthService) GenerateToken(email, password string) (string, error) {
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *AuthService) ParseToken(accessToken string) (int, error) {
+func (s *AuthService) ParseToken(accessToken string) (string, string, error) {
 	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
 		return []byte(signingKey), nil
 	})
+
 	if err != nil {
-		return 0, err
+		return "", "", err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return 0, errors.New("invalid token claims")
+		return "", "", errors.New("invalid token claims")
 	}
 
-	uid, ok := claims["userId"].(float64)
+	userIdStr, ok := claims["userId"].(string)
 	if !ok {
-		return 0, errors.New("userId claim missing")
+		return "", "", errors.New("userId claim missing or invalid format")
 	}
 
-	return int(uid), nil
+	role, ok := claims["role"].(string)
+	if !ok {
+		return "", "", errors.New("role claim missing")
+	}
+
+	return userIdStr, role, nil
 }

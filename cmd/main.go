@@ -39,7 +39,7 @@ func main() {
 	handlers := handler.NewHandler(services)
 	srv := new(avito_intern.Server)
 
-	if err := srv.Run("8000", handlers.InitRoutes()); err != nil {
+	if err := srv.Run("8080", handlers.InitRoutes()); err != nil {
 		log.Printf("%s", err)
 	}
 }

@@ -1,0 +1,39 @@
+version: '3.0'
+
+services:
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: appdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - db
+    volumes:
+      - ./schema/migrations:/migrations
+    command: [ "-path", "/migrations", "-database", "postgres://postgres:03795@db:5432/avito_intern?sslmode=disable", "up" ]
+
+  app:
+    build:
+      context: .
+    depends_on:
+      - db
+      - migrate
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: user
+      DB_PASSWORD: pass
+      DB_NAME: appdb
+
+volumes:
+  pgdata:

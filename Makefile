@@ -1,8 +1,8 @@
 build:
-	docker-compose build todo-app
+	docker-compose build avito_intern
 
 run:
-	docker-compose up todo-app
+	docker-compose up avito_intern
 
 test:
 	go test -v ./...

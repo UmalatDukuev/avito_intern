@@ -29,7 +29,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			pvzID.POST("/delete_last_product", h.deleteLastProduct)
 		}
 	}
-	router.POST("/receptions", h.createReception)
+	router.POST("/receptions", h.userIdentity, h.roleMiddleware("employee"), h.createReception)
 	router.POST("/products", h.addProductToReception)
 	return router
 }

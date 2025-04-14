@@ -8,7 +8,7 @@ import (
 
 type Repository struct {
 	Authorization
-	PVZRepo
+	PVZ
 	Reception
 	Product
 }
@@ -18,12 +18,13 @@ type Authorization interface {
 	GetUser(email, password string) (entity.User, error)
 }
 
-type PVZRepo interface {
+type PVZ interface {
 	CreatePVZ(pvz entity.PVZ) (string, error)
 }
 
 type Reception interface {
 	CreateReception(pvzID string) (string, error)
+	GetActiveReception(pvzID string) (*entity.Reception, error)
 }
 
 type Product interface {
@@ -32,7 +33,7 @@ type Product interface {
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
-		PVZRepo:       NewPVZPostgres(db),
+		PVZ:           NewPVZPostgres(db),
 		Reception:     NewReceptionPostgres(db),
 		Product:       NewProductPostgres(db),
 	}

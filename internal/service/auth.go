@@ -44,11 +44,11 @@ func GeneratePasswordHash(password string) string {
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *AuthService) GenerateDummyToken(userType string) (string, error) {
+func (s *AuthService) GenerateDummyToken(role string) (string, error) {
 	claims := jwt.MapClaims{
-		"userId":   "0",
-		"userType": userType,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"userId": "0",
+		"role":   role,
+		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(signingKey))

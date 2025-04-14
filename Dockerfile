@@ -1,11 +1,26 @@
-FROM golang:1.23.0-alpine as builder
+FROM golang:1.23 as builder
 
-COPY . /avito_intern
-WORKDIR /avito_intern
+WORKDIR /app
 
+COPY go.mod go.sum ./
 RUN go mod download
-RUN go build -o app ./cmd/main.go
 
-EXPOSE 8080
+COPY . .
 
-CMD ["./app"]
+RUN go build -o main ./cmd/main.go
+
+# --- Final image
+FROM golang:1.23
+
+WORKDIR /app
+
+COPY --from=builder /app/main /app/main
+COPY --from=builder /app/schema/migrations /app/schema/migrations
+COPY --from=builder /app/entrypoint.sh /app/entrypoint.sh
+
+RUN chmod +x /app/entrypoint.sh
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+ENV DATABASE_URL=postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+
+CMD ["/app/entrypoint.sh"]

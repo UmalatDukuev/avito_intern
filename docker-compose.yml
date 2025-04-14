@@ -1,39 +1,32 @@
-version: '3.0'
+version: '3.9'
 
 services:
-  db:
-    image: postgres:15
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: appdb
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  migrate:
-    image: migrate/migrate
-    depends_on:
-      - db
-    volumes:
-      - ./schema/migrations:/migrations
-    command: [ "-path", "/migrations", "-database", "postgres://postgres:03795@db:5432/avito_intern?sslmode=disable", "up" ]
-
   app:
     build:
       context: .
+      dockerfile: Dockerfile
+    container_name: go-app
     depends_on:
       - db
-      - migrate
+    environment:
+      - DATABASE_URL=postgres://postgres:pass@db:5432/avito?sslmode=disable
+    command: ["/app/entrypoint.sh"]
+    volumes:
+      - .:/app
     ports:
       - "8080:8080"
+
+  db:
+    image: postgres:15
+    container_name: postgres
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: user
-      DB_PASSWORD: pass
-      DB_NAME: appdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: avito
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
   pgdata:

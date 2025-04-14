@@ -2,7 +2,7 @@
 set -e
 
 echo "Waiting for database..."
-sleep 15
+sleep 5
 
 echo "Running migrations..."
 migrate -path /app/schema/migrations -database "$DATABASE_URL" up

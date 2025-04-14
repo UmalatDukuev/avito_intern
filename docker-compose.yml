@@ -10,9 +10,10 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://postgres:pass@db:5432/avito?sslmode=disable
-    command: ["/app/entrypoint.sh"]
+    command: [ "/app/entrypoint.sh" ]
     volumes:
-      - .:/app
+      - ./schema/migrations:/app/schema/migrations
+
     ports:
       - "8080:8080"
 

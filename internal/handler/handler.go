@@ -22,14 +22,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	pvz := router.Group("/pvz")
 	{
 		pvz.POST("/", h.userIdentity, h.roleMiddleware("moderator"), h.createPVZ)
-		pvz.GET("/", h.getPVZList)
-		pvzID := router.Group("/:pvzId")
+		pvz.GET("/", h.userIdentity, h.roleMiddleware("moderator", "employee"), h.getPVZList)
+		pvzID := pvz.Group("/:pvzId")
 		{
-			pvzID.POST("/close_last_reception", h.closeLastReception)
-			pvzID.POST("/delete_last_product", h.deleteLastProduct)
+			pvzID.POST("/close_last_reception", h.userIdentity, h.roleMiddleware("employee"), h.closeLastReception)
+			pvzID.POST("/delete_last_product", h.userIdentity, h.roleMiddleware("employee"), h.deleteLastProduct)
 		}
 	}
 	router.POST("/receptions", h.userIdentity, h.roleMiddleware("employee"), h.createReception)
-	router.POST("/products", h.addProductToReception)
+	router.POST("/products", h.userIdentity, h.roleMiddleware("employee"), h.addProductToReception)
 	return router
 }

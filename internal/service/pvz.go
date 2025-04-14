@@ -27,3 +27,16 @@ func (s *PVZService) CreatePVZ(pvz entity.PVZ) (string, error) {
 
 	return s.repo.CreatePVZ(pvzS)
 }
+
+func (s *PVZService) GetPVZList(startDate, endDate *time.Time, page, limit int) ([]entity.PVZResponse, error) {
+	pvzList, err := s.repo.GetPVZWithDetails(startDate, endDate, page, limit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pvz list: %v", err)
+	}
+
+	return pvzList, nil
+}
+
+func (s *PVZService) GetByID(pvzID string) (*entity.PVZ, error) {
+	return s.repo.GetByID(pvzID)
+}

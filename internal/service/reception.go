@@ -1,8 +1,10 @@
 package service
 
 import (
+	"avito_intern/internal/handler/response"
 	"avito_intern/internal/repository"
 	"fmt"
+	"time"
 )
 
 type ReceptionService struct {
@@ -29,4 +31,24 @@ func (s *ReceptionService) CreateReception(pvzID string) (string, error) {
 	}
 
 	return id, nil
+}
+
+func (s *ReceptionService) CloseLastReception(pvzID string) (*response.ReceptionResponse, error) {
+	activeReception, err := s.repo.GetActiveReception(pvzID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get active reception: %v", err)
+	}
+	if activeReception == nil {
+		return nil, fmt.Errorf("no active reception found for this PVZ")
+	}
+
+	activeReception.Status = "close"
+	activeReception.ClosedAt = time.Now()
+
+	err = s.repo.UpdateReceptionStatus(activeReception)
+	if err != nil {
+		return nil, fmt.Errorf("failed to close reception: %v", err)
+	}
+
+	return activeReception, nil
 }

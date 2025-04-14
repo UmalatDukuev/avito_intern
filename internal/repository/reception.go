@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"avito_intern/internal/handler/entity"
+	"avito_intern/internal/handler/response"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -31,23 +31,32 @@ func (r *ReceptionPostgres) CreateReception(pvzID string) (string, error) {
 	return id, nil
 }
 
-func (r *ReceptionPostgres) GetActiveReception(pvzID string) (*entity.Reception, error) {
-	var reception entity.Reception
+func (r *ReceptionPostgres) GetActiveReception(pvzID string) (*response.ReceptionResponse, error) {
+	var reception response.ReceptionResponse
+
 	query := `
 		SELECT id, pvz_id, status
 		FROM receptions
 		WHERE pvz_id = $1 AND status = 'in_progress'
 		LIMIT 1
 	`
-	// Выполняем запрос
 	err := r.db.Get(&reception, query, pvzID)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			// Если не нашли запись, возвращаем nil
 			return nil, nil
 		}
 		return nil, fmt.Errorf("failed to get active reception: %v", err)
 	}
 
 	return &reception, nil
+}
+
+func (r *ReceptionPostgres) UpdateReceptionStatus(reception *response.ReceptionResponse) error {
+	query := `
+		UPDATE receptions
+		SET status = $1, closed_at = $2
+		WHERE id = $3
+	`
+	_, err := r.db.Exec(query, reception.Status, reception.ClosedAt, reception.ID)
+	return err
 }
